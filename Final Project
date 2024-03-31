@@ -456,6 +456,7 @@ def parameters():
     # laserFrequency = float(laserFreq_Entry.get())
     kerfSiz = float(kerfSize_Entry.get())
 
+    #.....................................ALGORITHMS AND DATA STRUCTURE.....................................
     # ____________________________________model Calculation Start here______________________________________
 
     # Creates data set from minimum to maximum for the pulse width range
