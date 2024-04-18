@@ -1,0 +1,204 @@
+# ____________________________________model Calculation Start here______________________________________
+
+            # Creates data set from minimum to maximum for the pulse width range
+            predicted_dataset = []
+            for i in range(50):
+
+                # generating a random number in the range 1 to 50
+                random_gen = np.random.uniform(low=0.000, high=0.050)
+                y_value = (np.round(random_gen, 3))
+
+                # checking whether the generated random number is not in the randomList
+                if random_gen not in predicted_dataset:
+                    # appending the random number to the resultant list, if the condition is true
+                    predicted_dataset.append(y_value)
+
+                predicted_dataset.sort()
+
+                # assign list
+                dataset = predicted_dataset
+                # open file
+                with open('model\\modelData.txt', 'w+') as datafile:
+                    # write elements of list
+                    for items in dataset:
+                        datafile.write('%s\n' % items)
+                # close the file
+                datafile.close()
+
+            # mean for the predicted pulsewidth dataset
+            predicted_mean = statistics.mean(predicted_dataset)
+
+            # Data from the prediction model provided by user turned into a list
+            predictModel = [predicted_model_var]
+
+            # mean for the predicted pulsewidth dataset turned into a list
+            predictModel2 = [predicted_mean]
+
+            # Combines predicted model and mean model from dataset into one list
+            predictModel.extend(predictModel2)
+
+            # arranges list from small to large
+            predictModel.sort()
+
+            # Sets the range to create data to rerun and generate a new mean
+            startData = predictModel[0]
+            endData = predictModel[1]
+
+            refineDataset = []
+            for i in range(50):
+
+                # generating a random number in the range 1 to 50
+                rangeDataset = np.random.uniform(low=startData, high=endData)
+                y_two = (np.round(rangeDataset, 3))
+
+                # checking whether the generated random number is not in the randomList
+                if rangeDataset not in refineDataset:
+                    # appending the random number to the resultant list, if the condition is true
+                    refineDataset.append(y_two)
+                refineDataset.sort()
+
+                # assign list
+                dataset2 = refineDataset
+                # open file
+                with open('model\\modelData2.txt', 'w+') as data_file2:
+
+                    # write elements of list
+                    for items in dataset2:
+                        data_file2.write('%s\n' % items)
+
+                # close the file
+                data_file2.close()
+
+            # statistics.mean(predictModel)
+            predict_model_mean2 = statistics.mean(refineDataset)
+
+            # ___________________________________ model Calculation Ends here ___________________________________
+
+            # __________________________________ generatedata Start _______________________________
+            data1 = []
+            with open('model\\modelData.txt') as f:
+                for line in f.readlines():
+                    data1.append(float(line))
+
+            data2 = []
+            with open('model\\modelData2.txt') as f:
+                for line in f.readlines():
+                    data2.append(float(line))
+
+            meanData = statistics.mean(data1)
+
+            pulseWidthSpi = round(predict_model_mean2, 3)
+
+            # Using np.linspace() with num parameter
+            x_value = [x_value / 1000 for x_value in range(0, 50)]
+            x_value2 = [meanData]
+            y_value2 = [meanData]
+            x_value3 = [wall_thickness]
+            y_value3 = [pulseWidthSpi]
+
+            # y_value = [x_value / 1000 for x_value in range(0, 50)]
+
+            def data_eng():
+                plt.close()
+                plt.scatter(x_value, data1, s=10, c='teal')
+                plt.scatter(x_value2, y_value2, s=10, c='red')
+                plt.text(meanData, meanData, "mean", fontsize=8)
+                plt.scatter(x_value3, y_value3, s=10, c='red')
+                plt.text(wall_thickness, pulseWidthSpi, "pulse width", fontsize=8)
+                plt.plot(x_value, data2)
+                # Add correlation line
+
+                plt.title("Pulse Width Prediction", fontsize=10)
+                axes = plt.gca()
+                m, b = np.polyfit(x_value, data1, 1)
+                X_plot = np.linspace(axes.get_xlim()[0], axes.get_xlim()[1], 100)
+                plt.plot(X_plot, m * X_plot + b, '-')
+                plt.xlabel('Wall Thickness(x)')
+                plt.ylabel('Pulse Width(y)')
+                plt.grid(alpha=.6, color='green', linestyle='--', linewidth=0.5)
+                plt.show()
+
+                # Mean of the predicting data
+
+            # Standard deviation of the predicting data
+            standard_dev = round(np.std(data1), 3)
+            # Confidence interval of the predicting data
+            # confidenceI = interv
+
+            design_para_btn = ttk.Button(laser_frame, text='Graph', command=data_eng)
+            design_para_btn.place(x=15, y=290, height=30, width=100)
+
+            # ___________________________________ generatedata End ________________________________
+
+            # LASER CUTTING EQUATIONS
+            laser_mod_one = float(freq_one)
+            laser_mod_two = float(freq_two)
+            laser_mod_three = float(freq_three)
+            laser_mod_four = float(freq_four)
+            laser_mod_five = float(freq_five)
+
+            laserFrequency = 1
+
+            laser_speed2 = round(speed)
+
+            if las1 == laserPow:
+                laserFrequency = laser_mod_one
+            elif las2 == laserPow:
+                laserFrequency = laser_mod_two
+            elif las3 == laserPow:
+                laserFrequency = laser_mod_three
+            elif las4 == laserPow:
+                laserFrequency = laser_mod_four
+            elif las5 == laserPow:
+                laserFrequency = laser_mod_five
+            else:
+                mb.showinfo(title="Laser Power", message='Please Select Laser Power')
+
+            laserPow1 = wattsDetails_Entry.get()
+            laserPow2 = float(laserPow1)
+
+            # _______Data Structure and Algorithms______________________________
+            pulseWidthSpi = float(pulseWidthSpi)
+            actualPulsePower = float((laserPow2 * pulse_power_percent) / 100)
+            pulseEnergy = float(pulseWidthSpi * actualPulsePower)
+            repRateTime1 = float(1 / laserFrequency)
+            repRateTime = round(repRateTime1, 5)
+            repRate1 = float(repRateTime * 1000)
+            repRate = round(repRate1, 5)
+            outputPower1 = float((pulseEnergy * laserFrequency) / 1000)
+            outputPower = round(outputPower1, 3)
+            dutyCycle1 = float(pulseWidthSpi / repRate)
+            dutyCycle = round(dutyCycle1 * 100, 2)
+            spotSizeOverlap1 = float(1 - (laser_speed2 / (kerfSiz * laserFrequency)))
+            spotSizeOverlap = round(spotSizeOverlap1 * 100, 2)
+            newMaterialBite1 = float(laser_speed2 / (kerfSiz * laserFrequency))
+            newMaterialBite = round(newMaterialBite1 * 100, 2)
+
+            parameter_display = (
+                    " Wall Thickness" + '\t\t\t' + str(wall_thickness) +
+                    "\n Pulse Width (ms)" + '\t\t' + str(pulseWidthSpi) +
+                    "\n Pulse Power (%)" + '\t\t' + str(pulse_power_percent) +
+                    "\n Laser Power (Watts)" + '\t\t' + str(laserPow1) +
+                    "\n Kerf Size)" + '\t\t\t' + str(kerfSiz) +
+                    "\n Pulse Power (Watts)" + '\t\t' + str(actualPulsePower) +
+                    "\n Pulse Frequency (Hz)" + '\t\t' + str(laserFrequency) +
+                    "\n Speed(mm/s)" + '\t\t\t' + str(laser_speed2) +
+                    "\n Pulse Energy (mJ)" + '\t\t' + str(pulseEnergy) +
+                    "\n Rep Rate Time (s)" + '\t\t' + str(repRateTime) +
+                    "\n Rep Rate (ms)" + '\t\t\t' + str(repRate) +
+                    "\n Output Power(mJ/s)" + '\t\t' + str(outputPower) +
+                    "\n Duty Cycle (%)" + '\t\t\t' + str(dutyCycle) +
+                    "\n Spot Size Overlap (%)" + '\t\t' + str(spotSizeOverlap) +
+                    "\n Material Bite (%)" + '\t\t' + str(newMaterialBite) +
+                    "\n _____________________________" +
+                    "\n Generated Data Mean" + '\t\t' + str(meanData) +
+                    "\n Standard Deviation" + '\t\t' + str(standard_dev))
+
+            pulse_width_answer.config(text=pulseWidthSpi, font=('calibri light', 18))
+            frequency_answer.config(text=laserFrequency, font=('calibri light', 18))
+            speed_answer.config(text=laser_speed2, font=('calibri light', 18))
+
+            with open('notes_directory\\laser_results.txt', "w") as file:
+                file.write(parameter_display)
+                file.close()
+            os.startfile('notes_directory\\laser_results.txt')
