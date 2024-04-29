@@ -1,0 +1,4 @@
+4620
+27890
+
+freq_one = 4620 + (27890 * wall_thickness) 

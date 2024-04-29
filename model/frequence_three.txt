@@ -1,0 +1,4 @@
+3378
+24632
+
+freq_three = 3378 + (24632 * wall_thickness)
